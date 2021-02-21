@@ -15,14 +15,18 @@ class Config(MutableMapping):
             self.read()
         else:
             self.write()
+        
+        self.dirty = False
     
     def write(self):
         with open(self.filepath, 'w') as f:
             json.dump(self.store, f, sort_keys=self.sort_keys, indent=self.indent)
+        self.dirty = False
     
     def read(self):
         with open(self.filepath, 'r') as f:
             self.store = json.load(f)
+        self.dirty = False
 
     def update(self, other):
         self.store.update(other)
@@ -33,14 +37,16 @@ class Config(MutableMapping):
 
     def __setitem__(self, key, value):
         self.store[key] = value
+        self.dirty = True
         if self.do_write_automatically:
             self.write()
 
     def __delitem__(self, key):
         del self.store[key]
+        self.dirty = True
         if self.do_write_automatically:
             self.write()
-
+    
     def __iter__(self):
         return iter(self.store)
     
