@@ -55,21 +55,3 @@ class Config(MutableMapping):
     
     def __contains__(self, key):
         return key in self.store
-
-
-from pprint import pprint
-def main():
-    config = Config('config.json')
-    for key, value in config.items():
-        print(str(key) + ': ' + str(value))
-    
-    d = {
-        'one': 2,
-        'three': 4
-    }
-    d['d'] = d.copy()
-    pprint(d)
-    config.update(d)
-
-if __name__ == '__main__':
-    main()
