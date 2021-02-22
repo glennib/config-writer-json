@@ -3,29 +3,34 @@ import json
 from collections.abc import MutableMapping
     
 class ConfigWriter(MutableMapping):
-    def __init__(self, filepath, do_write_automatically=True, sort_keys=True, indent=4):
-        self.store = dict()
+    def __init__(self, filepath, *, do_write_automatically=True, sort_keys=True, indent=4, defaults=None):
+        self.filepath = filepath
         self.do_write_automatically = do_write_automatically
-
         self.sort_keys = sort_keys
         self.indent = indent
 
-        self.filepath = filepath
+        self.dirty = True
+        self.store = dict()
+        if defaults is not None:
+            self.store.update(defaults)
+
         if os.path.isfile(self.filepath):
-            self.read()
+            self.read(update=True)
         else:
             self.write()
         
-        self.dirty = False
     
     def write(self):
         with open(self.filepath, 'w') as f:
             json.dump(self.store, f, sort_keys=self.sort_keys, indent=self.indent)
         self.dirty = False
     
-    def read(self):
+    def read(self, *, update=False):
         with open(self.filepath, 'r') as f:
-            self.store = json.load(f)
+            if update:
+                self.store.update(json.load(f))
+            else:
+                self.store = json.load(f)
         self.dirty = False
 
     def update(self, other):
