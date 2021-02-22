@@ -2,7 +2,7 @@ import os
 import json
 from collections.abc import MutableMapping
     
-class Config(MutableMapping):
+class ConfigWriter(MutableMapping):
     def __init__(self, filepath, do_write_automatically=True, sort_keys=True, indent=4):
         self.store = dict()
         self.do_write_automatically = do_write_automatically
